@@ -10,6 +10,6 @@ public class BankSystem {
 
     @EJB
     private CreditRatingService creditRatingService;
-    
+
     // TODO
 }
