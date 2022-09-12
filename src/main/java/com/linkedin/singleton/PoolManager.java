@@ -1,15 +1,22 @@
 package com.linkedin.singleton;
 
+import javax.annotation.PostConstruct;
+import javax.ejb.DependsOn;
 import javax.ejb.Singleton;
+import javax.ejb.Startup;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+@Startup
 @Singleton
+@DependsOn("Configuration")
 public class PoolManager {
+    private Queue<Object> pooledObjects;
 
-    private Queue<Object> pooledObjects = new LinkedBlockingQueue<Object>(1000);
+    @PostConstruct
+    public void constructObjects() {
+        pooledObjects = new LinkedBlockingQueue<Object>(1000);
 
-    public PoolManager() {
         for (int i = 0; i < 1000; i++) {
             pooledObjects.offer(new Object());
         }
