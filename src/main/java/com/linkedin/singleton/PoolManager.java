@@ -1,15 +1,15 @@
 package com.linkedin.singleton;
 
 import javax.annotation.PostConstruct;
-import javax.ejb.DependsOn;
-import javax.ejb.Singleton;
-import javax.ejb.Startup;
+import javax.ejb.*;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
+@ConcurrencyManagement(ConcurrencyManagementType.BEAN)
+@DependsOn("Configuration")
 @Startup
 @Singleton
-@DependsOn("Configuration")
 public class PoolManager {
     private Queue<Object> pooledObjects;
 
@@ -22,10 +22,13 @@ public class PoolManager {
         }
     }
 
+    @AccessTimeout(value = 30, unit = TimeUnit.SECONDS)
+    @Lock(LockType.WRITE)
     public void returnObject(Object obj) {
         pooledObjects.offer(obj);
     }
 
+    @Lock(LockType.READ)
     public Object borrowObject() {
         return pooledObjects.poll();
     }
